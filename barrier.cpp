@@ -1,5 +1,4 @@
 #include "barrier.h"
-#include <semaphore>
 
 namespace synchronization
 {
@@ -9,61 +8,58 @@ namespace synchronization
    int threads; // The total number of threads in the program
 
    /* Mutex semaphores */
-   std::counting_semaphore mutexEnter; // Lock for changing enter value
-   std::counting_semaphore mutexExit; // Lock for changing exit value
+   sem_t mutexEnter; // Lock for changing enter value
+   sem_t mutexExit; // Lock for changing exit value
 
    /* Barrier semaphores */
-   std::counting_semaphore gate; // Gate for all threads to wait until the last gate enters
-   std::counting_semaphore lastGate; // Special gate to wait only used by the last thread to enter
+   sem_t gate; // Gate for all threads to wait until the last thread enters
+   sem_t lastGate; // Special gate to wait only used by the last thread to enter
 
 
    barrier::barrier( int numberOfThreads ) {
       enter = 0; // Initialize the counts
       exit = 0;
-      threads = numberOfThreads;
-      
-      mutexEnter(1); // Initialize the locks
-      mutexExit(1);
-
-      gate(0); // Initialize the gates
-      lastGate(0);
-
+      threads = numberOfThreads; // Set the thread count
+      int retEnter = sem_init(&mutexEnter, 0, 1); // Initialize the locks
+      int retExit = sem_init(&mutexExit, 0, 1);
+      int retGate = sem_init(&gate, 0, 0); // Initialize the gates
+      int retLast = sem_init(&lastGate, 0, 0); 
+      // Error for return values ?
       return;
    }
 
    barrier::~barrier( ) {
       // Write your code here
-      ~gate();
-      ~lastGate();
-      ~mutexExit();
-      ~mutexEnter();
-      
+      sem_destroy(&mutexEnter); // Destroy all the semaphores
+      sem_destroy(&mutexExit);
+      sem_destroy(&gate);
+      sem_destroy(&lastGate);
       return;
    }
 
    void barrier::arriveAndWait( void ) {
       // Write your code here
-      mutexEnter.acquire(); // Get the enter lock
+      sem_wait(&mutexEnter); // Get the enter lock
       enter++; // Increment the count
       if(enter == threads) { // If I'm the last one
          enter = 0; // Reset the count
-         gate.release(); // Start the chain of releasing
-         lastGate.acquire(); // Wait to be released
-         mutexEnter.release(); // Release the lock, end of this cycle
+         sem_post(&gate); // Start the chain of releasing
+         sem_wait(&lastGate); // Wait to be released
+         sem_post(&mutexEnter); // Release the lock, end of this cycle
       }
       else {
-         mutexEnter.release(); // Release the lock
-         gate.acquire(); // Wait to be released
-         mutexExit.acquire(); // Get the exit lock
+         sem_post(&mutexEnter); // Release the lock
+         sem_wait(&gate); // Wait to be released
+         sem_wait(&mutexExit); // Get the exit lock
          exit++;
          if(exit == threads-1) { // If I'm the last one
             exit = 0; // Reset the count
-            mutexExit.release(); // Release the lock
-            lastGate.release(); // Release the last thread
+            sem_post(&mutexExit); // Release the lock
+            sem_post(&lastGate); // Release the last thread
          }
          else {
-            mutexExit.release(); // Release the lock
-            gate.release(); // Release the next thread
+            sem_post(&mutexExit); // Release the lock
+            sem_post(&gate); // Release the next thread
          }
       }
       return;
