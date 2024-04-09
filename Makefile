@@ -1,5 +1,5 @@
-CC = /bin/g++
-CCFLAGS = -g -std=c++11
+CC = g++
+CCFLAGS = -g -std=c++20
 INCLUDES =
 LIBRARIES = -lboost_system -lboost_thread -lpthread -lrt
 # LIBRARIES = -lpthread
