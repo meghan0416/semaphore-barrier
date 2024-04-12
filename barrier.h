@@ -1,3 +1,12 @@
+/*
+ *
+ * Authors: Meghan Grayson and Vaishnavi Karaguppi
+ * Last modified date: April 12, 2024
+ * 
+ * This is the class definition for a reusable thread barrier with semaphores. 
+ * 
+ */
+
 #ifndef BARRIER_H
 #define BARRIER_H
 
