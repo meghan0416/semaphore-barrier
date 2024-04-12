@@ -2,29 +2,14 @@
 
 namespace synchronization
 {
-   /* Shared members */
-   int enter; // The number of threads that have entered the barrier
-   int exit; // The number of threads that have exited the barrier
-   int threads; // The total number of threads in the program
-
-   /* Mutex semaphores */
-   sem_t mutexEnter; // Lock for changing enter value
-   sem_t mutexExit; // Lock for changing exit value
-
-   /* Barrier semaphores */
-   sem_t gate; // Gate for all threads to wait until the last thread enters
-   sem_t lastGate; // Special gate to wait only used by the last thread to enter
-
-
    barrier::barrier( int numberOfThreads ) {
       enter = 0; // Initialize the counts
       exit = 0;
       threads = numberOfThreads; // Set the thread count
-      int retEnter = sem_init(&mutexEnter, 0, 1); // Initialize the locks
-      int retExit = sem_init(&mutexExit, 0, 1);
-      int retGate = sem_init(&gate, 0, 0); // Initialize the gates
-      int retLast = sem_init(&lastGate, 0, 0); 
-      // Error for return values ?
+      sem_init(&mutexEnter, 0, 1); // Initialize the locks
+      sem_init(&mutexExit, 0, 1);
+      sem_init(&gate, 0, 0); // Initialize the gates
+      sem_init(&lastGate, 0, 0); 
       return;
    }
 

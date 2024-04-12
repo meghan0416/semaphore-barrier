@@ -161,9 +161,6 @@ int main( int argc, char** argv )
    catch (const std::exception& e) {
       cerr << "Exception: " << e.what() << endl;
    }
-   catch (const std::invalid_argument& e) {
-      cerr << "Unknown exception occurred" << endl;
-   }
 
    return 0;
 }
