@@ -11,7 +11,13 @@ namespace synchronization
    // Provides a reusable barrier
    class barrier {
    private:
-      // Declare your variables here
+      static int enter; //The number of threads that have entered the barrier
+      static int exit; //The number of threads that have exited the barrier
+      static int threads; //The total number of threads in the program
+      static sem_t mutexEnter; //Lock for changing enter value
+      static sem_t mutexExit; //Lock for changing exit value
+      static sem_t gate; //Gate for all threads to wait until the last thread enters
+      static sem_t lastGate; //Special gate to wait only used by the last thread to enter
 
    public:
 
